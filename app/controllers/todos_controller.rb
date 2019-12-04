@@ -2,21 +2,15 @@ class TodosController < ApplicationController
   before_action :authenticate_user
 
   def index
-    todos =
-      case params[:status]&.strip&.downcase
-      when 'active' then Todo.active
-      when 'overdue' then Todo.overdue
-      when 'completed' then Todo.completed
-      else Todo.all
-      end
+    todos = TodoFinder.new(current_user, params).find_todos
 
-    json = todos.where(user_id: current_user.id).map { |todo| todo_as_json(todo) }
+    json = todos.map { |todo| todo_as_json(todo) }
 
     render_json(200, todos: json)
   end
 
   def create
-    todo = current_user.todos.create(todo_params)
+    todo = TodoCreator.new(current_user, params).create_todo
 
     if todo.valid?
       render_json(201, todo: todo_as_json(todo))
@@ -28,9 +22,7 @@ class TodosController < ApplicationController
   end
 
   def destroy
-    todo = current_user.todos.find(params[:id])
-
-    todo.destroy
+    todo = TodoDestroyer.new(current_user, params).destroy_todo
 
     render_json(200, todo: todo_as_json(todo))
   rescue ActiveRecord::RecordNotFound
@@ -38,9 +30,7 @@ class TodosController < ApplicationController
   end
 
   def update
-    todo = current_user.todos.find(params[:id])
-
-    todo.update(todo_params)
+    todo = TodoUpdater.new(current_user, params).update_todo
 
     if todo.valid?
       render_json(200, todo: todo_as_json(todo))
@@ -54,9 +44,7 @@ class TodosController < ApplicationController
   end
 
   def complete
-    todo = current_user.todos.find(params[:id])
-
-    todo.complete!
+    todo = TodoUpdater.new(current_user, params).complete_todo
 
     render_json(200, todo: todo_as_json(todo))
   rescue ActiveRecord::RecordNotFound
@@ -64,9 +52,7 @@ class TodosController < ApplicationController
   end
 
   def activate
-    todo = current_user.todos.find(params[:id])
-
-    todo.activate!
+    todo = TodoUpdater.new(current_user, params).activate_todo
 
     render_json(200, todo: todo_as_json(todo))
   rescue ActiveRecord::RecordNotFound
