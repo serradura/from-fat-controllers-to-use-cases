@@ -1,42 +1,39 @@
-class TodoUpdater
-  attr_reader :user, :params
-
-  def initialize(user, params)
-    @user = user
-    @params = params
-  end
-
-  def update_todo
+class Todo::Updater < Todo::ServiceObject
+  def update_todo(result_as_json: false)
     todo = find_todo
 
     todo_params = params.require(:todo).permit(:title, :due_at)
 
     todo.update(todo_params)
 
-    todo
+    result = result_as_json ? serialize_todo(todo) : todo
+
+    [todo.valid?, result]
   end
 
-  def complete_todo
+  def complete_todo(result_as_json: false)
     todo = find_todo
 
     todo.completed_at = Time.current unless todo.completed?
+
     todo.save if todo.completed_at_changed?
 
-    todo
+    result_as_json ? serialize_todo(todo) : todo
   end
 
-  def activate_todo
+  def activate_todo(result_as_json: false)
     todo = find_todo
 
     todo.completed_at = nil unless todo.active?
+
     todo.save if todo.completed_at_changed?
 
-    todo
+    result_as_json ? serialize_todo(todo) : todo
   end
 
   private
 
     def find_todo
-      TodoFinder.new(user, params).find_todo
+      Todo::Finder.new(user, params).find_todo
     end
 end
