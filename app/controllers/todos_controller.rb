@@ -56,10 +56,7 @@ class TodosController < ApplicationController
   def complete
     todo = current_user.todos.find(params[:id])
 
-    unless todo.completed?
-      todo.completed_at = Time.current
-      todo.save
-    end
+    todo.complete!
 
     render_json(200, todo: todo_as_json(todo))
   rescue ActiveRecord::RecordNotFound
@@ -69,10 +66,7 @@ class TodosController < ApplicationController
   def activate
     todo = current_user.todos.find(params[:id])
 
-    unless todo.active?
-      todo.completed_at = nil
-      todo.save
-    end
+    todo.activate!
 
     render_json(200, todo: todo_as_json(todo))
   rescue ActiveRecord::RecordNotFound
