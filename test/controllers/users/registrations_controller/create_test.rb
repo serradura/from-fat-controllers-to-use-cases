@@ -13,7 +13,7 @@ class Users::RegistrationsControllerCreateTest < ActionDispatch::IntegrationTest
   end
 
   test "should respond with 400 when the user password params are missing" do
-    post users_registrations_url, params: { user: { password: '' } }
+    post users_registrations_url, params: { user: { name: 'User One' } }
 
     assert_response 422
 
@@ -29,7 +29,7 @@ class Users::RegistrationsControllerCreateTest < ActionDispatch::IntegrationTest
   end
 
   test "should respond with 400 when the user password params are differents" do
-    post users_registrations_url, params: { user: { password: '123', password_confirmation: '321' } }
+    post users_registrations_url, params: { user: { name: 'User Two', password: '123', password_confirmation: '321' } }
 
     assert_response 422
 

@@ -31,4 +31,24 @@ class Todo < ApplicationRecord
 
     'active'
   end
+
+  def complete
+    self.completed_at = Time.current unless completed?
+  end
+
+  def complete!
+    complete
+
+    self.save if completed_at_changed?
+  end
+
+  def activate
+    self.completed_at = nil unless active?
+  end
+
+  def activate!
+    activate
+
+    self.save if completed_at_changed?
+  end
 end
