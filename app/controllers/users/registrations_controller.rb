@@ -1,13 +1,13 @@
 class Users::RegistrationsController < ApplicationController
   def create
-    user_params = params.require(:user).permit(:name, :password, :password_confirmation)
+    user_params = User::Params.to_register(params)
 
-    result = RegisterUser.call(user_params: user_params)
+    user = User::Registration.new(user_params).create
 
-    if result.success?
-      render_json(201, user: result.user.as_json(only: [:id, :name, :token]))
+    if user.persisted?
+      render_json(201, user: user.as_json(only: [:id, :name, :token]))
     else
-      render_json(422, user: result.user.errors.as_json)
+      render_json(422, user: user.errors.as_json)
     end
   rescue ActionController::ParameterMissing => e
     render_json(400, error: e.message)
