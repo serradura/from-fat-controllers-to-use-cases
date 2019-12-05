@@ -2,35 +2,35 @@ class TodosController < ApplicationController
   before_action :authenticate_user
 
   def index
-    todos = Todo::Finder.new(current_user, params).find_todos(result_as_json: true)
+    result = FindTodos.call(user: current_user, params: params)
 
-    render_json(200, todos: todos)
+    render_json(200, todos: result.todos_as_json)
   end
 
   def create
-    success, todo = Todo::Creator.new(current_user, params).create_todo(result_as_json: true)
+    result = CreateTodo.call(user: current_user, params: params)
 
-    status = success ? 201 : 422
+    status = result.success? ? 201 : 422
 
-    render_json(status, todo: todo)
+    render_json(status, todo: result.todo_as_json)
   rescue ActionController::ParameterMissing => e
     render_json(400, error: e.message)
   end
 
   def destroy
-    todo = Todo::Destroyer.new(current_user, params).destroy_todo(result_as_json: true)
+    result = DestroyTodo.call(user: current_user, params: params)
 
-    render_json(200, todo: todo)
+    render_json(200, todo: result.todo_as_json)
   rescue ActiveRecord::RecordNotFound
     render_json(404, todo: { id: 'not found' })
   end
 
   def update
-    success, todo = Todo::Updater.new(current_user, params).update_todo(result_as_json: true)
+    result = UpdateTodo.call(user: current_user, params: params)
 
-    status = success ? 200 : 422
+    status = result.success? ? 200 : 422
 
-    render_json(status, todo: todo)
+    render_json(status, todo: result.todo_as_json)
   rescue ActiveRecord::RecordNotFound
     render_json(404, todo: { id: 'not found' })
   rescue ActionController::ParameterMissing => e
@@ -38,17 +38,17 @@ class TodosController < ApplicationController
   end
 
   def complete
-    todo = Todo::Updater.new(current_user, params).complete_todo(result_as_json: true)
+    result = CompleteTodo.call(user: current_user, params: params)
 
-    render_json(200, todo: todo)
+    render_json(status, todo: result.todo_as_json)
   rescue ActiveRecord::RecordNotFound
     render_json(404, todo: { id: 'not found' })
   end
 
   def activate
-    todo = Todo::Updater.new(current_user, params).activate_todo(result_as_json: true)
+    result = ActivateTodo.call(user: current_user, params: params)
 
-    render_json(200, todo: todo)
+    render_json(status, todo: result.todo_as_json)
   rescue ActiveRecord::RecordNotFound
     render_json(404, todo: { id: 'not found' })
   end
