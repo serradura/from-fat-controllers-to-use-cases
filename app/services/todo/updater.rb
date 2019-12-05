@@ -2,8 +2,6 @@ class Todo::Updater < Todo::ServiceObject
   def update_todo(result_as_json: false)
     todo = find_todo
 
-    todo_params = params.require(:todo).permit(:title, :due_at)
-
     todo.update(todo_params)
 
     result = result_as_json ? serialize_todo(todo) : todo
@@ -30,10 +28,4 @@ class Todo::Updater < Todo::ServiceObject
 
     result_as_json ? serialize_todo(todo) : todo
   end
-
-  private
-
-    def find_todo
-      Todo::Finder.new(user, params).find_todo
-    end
 end
