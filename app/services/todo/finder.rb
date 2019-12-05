@@ -1,8 +1,4 @@
 class Todo::Finder < Todo::ServiceObject
-  def find_todo
-    user.todos.find(params[:id])
-  end
-
   def find_todos(result_as_json: false)
     relation = todos.where(user_id: user.id)
 
