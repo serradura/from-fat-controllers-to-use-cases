@@ -2,64 +2,50 @@ class TodosController < ApplicationController
   before_action :authenticate_user
 
   def index
-    todos = todo_list.fetch_items_by_status(params[:status])
-
-    render_json(200, todos: Todo::Serialization.map_as_json(todos))
+    Todo::List::FetchItems
+      .call(user: current_user, params: params)
+      .on_success { |result| render_json(200, todos: result[:todos]) }
   end
 
   def create
-    todo_params = Todo::Params.to_save(params)
-
-    todo = todo_list.add_item(todo_params)
-
-    status = todo.persisted? ? 201 : 422
-
-    render_json(status, todo: Todo::Serialization.as_json(todo))
-  rescue ActionController::ParameterMissing => e
-    render_json(400, error: e.message)
+    Todo::List::AddItem
+      .call(user: current_user, params: params)
+      .on_failure(:parameter_missing) { |error| render_json(400, error: error[:message]) }
+      .on_failure(:invalid_todo) { |todo| render_json(422, todo: todo[:errors]) }
+      .on_success { |result| render_json(201, todo: result[:todo]) }
   end
 
   def destroy
-    todo = todo_list.delete_item(params[:id])
-
-    render_json(200, todo: Todo::Serialization.as_json(todo))
-  rescue ActiveRecord::RecordNotFound
-    render_json(404, todo: { id: 'not found' })
+    Todo::List::DeleteItem
+      .call(user: current_user, todo_id: params[:id])
+      .on_failure(:validation_error) { |result| render_json(400, errors: result[:errors]) }
+      .on_failure(:todo_not_found) { render_json(404, todo: { id: 'not found' }) }
+      .on_success { |result| render_json(200, todo: result[:todo]) }
   end
 
   def update
-    todo_params = Todo::Params.to_save(params)
-
-    todo = todo_list.update_item(params[:id], todo_params)
-
-    status = todo.valid? ? 200 : 422
-
-    render_json(status, todo: Todo::Serialization.as_json(todo))
-  rescue ActiveRecord::RecordNotFound
-    render_json(404, todo: { id: 'not found' })
-  rescue ActionController::ParameterMissing => e
-    render_json(400, error: e.message)
+    Todo::List::UpdateItem
+      .call(user: current_user, todo_id: params[:id], params: params)
+      .on_failure(:parameter_missing) { |error| render_json(400, error: error[:message]) }
+      .on_failure(:validation_error) { |result| render_json(400, errors: result[:errors]) }
+      .on_failure(:todo_not_found) { render_json(404, todo: { id: 'not found' }) }
+      .on_failure(:invalid_todo) { |todo| render_json(422, todo: todo[:errors]) }
+      .on_success { |result| render_json(200, todo: result[:todo]) }
   end
 
   def complete
-    todo = todo_list.complete_item(params[:id])
-
-    render_json(200, todo: Todo::Serialization.as_json(todo))
-  rescue ActiveRecord::RecordNotFound
-    render_json(404, todo: { id: 'not found' })
+    Todo::List::CompleteItem
+      .call(user: current_user, todo_id: params[:id])
+      .on_failure(:validation_error) { |result| render_json(400, errors: result[:errors]) }
+      .on_failure(:todo_not_found) { render_json(404, todo: { id: 'not found' }) }
+      .on_success { |result| render_json(200, todo: result[:todo]) }
   end
 
   def activate
-    todo = todo_list.activate_item(params[:id])
-
-    render_json(200, todo: Todo::Serialization.as_json(todo))
-  rescue ActiveRecord::RecordNotFound
-    render_json(404, todo: { id: 'not found' })
+    Todo::List::ActivateItem
+      .call(user: current_user, todo_id: params[:id])
+      .on_failure(:validation_error) { |result| render_json(400, errors: result[:errors]) }
+      .on_failure(:todo_not_found) { render_json(404, todo: { id: 'not found' }) }
+      .on_success { |result| render_json(200, todo: result[:todo]) }
   end
-
-  private
-
-    def todo_list
-      @todo_list ||= Todo::List.of(current_user)
-    end
 end
