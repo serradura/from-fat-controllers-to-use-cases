@@ -94,6 +94,7 @@ GEM
     i18n (1.7.0)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
+    interactor (3.1.1)
     json (2.2.0)
     kwalify (0.7.2)
     launchy (2.4.3)
@@ -218,6 +219,7 @@ PLATFORMS
 DEPENDENCIES
   bootsnap (>= 1.4.2)
   byebug
+  interactor (~> 3.1)
   listen (>= 3.0.5, < 3.2)
   puma (~> 4.1)
   rails (~> 6.0.1)
