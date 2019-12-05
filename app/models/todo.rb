@@ -11,6 +11,15 @@ class Todo < ApplicationRecord
   scope :overdue, -> { active.where('due_at <= ?', Time.current) }
   scope :completed, -> { where.not(completed_at: nil) }
 
+  def self.where_status(status)
+    case status&.strip&.downcase
+    when Status::ACTIVE then Todo.active
+    when Status::OVERDUE then Todo.overdue
+    when Status::COMPLETED then Todo.completed
+    else Todo.all
+    end
+  end
+
   def overdue?
     return false if !due_at || completed_at
 
@@ -26,9 +35,9 @@ class Todo < ApplicationRecord
   end
 
   def status
-    return 'completed' if completed?
-    return 'overdue' if overdue?
+    return Status::COMPLETED if completed?
+    return Status::OVERDUE if overdue?
 
-    'active'
+    Status::ACTIVE
   end
 end

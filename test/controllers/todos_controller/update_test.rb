@@ -28,7 +28,7 @@ class TodosControllerUpdateTest < ActionDispatch::IntegrationTest
 
     put todo_url(id: 1), {
       headers: { 'Authorization' => "Bearer token=\"#{user.token}\"" },
-      params: { title: 'Buy coffee' }
+      params: { todo: { title: 'Buy coffee' } }
     }
 
     assert_response 404
