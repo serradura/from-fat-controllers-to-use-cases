@@ -1,4 +1,7 @@
 class Todo::List::AddItem < Micro::Case
+  flow self.call!,
+       Todo::Serialize::AsJson
+
   attributes :user, :params
 
   validates :user, type: User
@@ -9,11 +12,7 @@ class Todo::List::AddItem < Micro::Case
 
     todo = user.todos.create(todo_params)
 
-    todo_as_json = Todo::Serialization.as_json(todo)
-
-    return Success { { todo: todo_as_json } } if todo.persisted?
-
-    Failure(:invalid_todo) { { errors: todo_as_json } }
+    Success { { todo: todo} }
   rescue ActionController::ParameterMissing => e
     Failure(:parameter_missing) { { message: e.message } }
   end

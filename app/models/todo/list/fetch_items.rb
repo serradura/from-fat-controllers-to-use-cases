@@ -7,6 +7,6 @@ class Todo::List::FetchItems < Micro::Case
   def call!
     todos = Todo.where_status(params[:status]).where(user_id: user.id)
 
-    Success { { todos: Todo::Serialization.map_as_json(todos) } }
+    Success { { todos: Todo::Serialize.collection_as_json(todos) } }
   end
 end
