@@ -1,7 +1,6 @@
 class Todo::List::ActivateItem < Micro::Case
   flow Todo::List::FindItem,
-       self.call!,
-       Todo::Serialize::AsJson
+       self.call!
 
   attribute :todo
 

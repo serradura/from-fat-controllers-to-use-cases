@@ -205,7 +205,7 @@ GEM
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
     u-attributes (1.2.0)
-    u-case (2.2.0)
+    u-case (2.3.0)
       u-attributes (~> 1.1)
     virtus (1.0.5)
       axiom-types (~> 0.1)
@@ -233,7 +233,7 @@ DEPENDENCIES
   sqlite3 (~> 1.4)
   type_validator (~> 1.0)
   tzinfo-data
-  u-case (~> 2.2)
+  u-case (~> 2.3)
 
 RUBY VERSION
    ruby 2.6.5p114

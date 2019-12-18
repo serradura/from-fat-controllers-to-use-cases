@@ -1,7 +1,6 @@
 class Todo::List::DeleteItem < Micro::Case
   flow Todo::List::FindItem,
-       self.call!,
-       Todo::Serialize::AsJson
+       self.call!
 
   attribute :todo
 

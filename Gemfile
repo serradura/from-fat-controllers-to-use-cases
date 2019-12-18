@@ -3,7 +3,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.6.5'
 
-gem 'u-case', '~> 2.2', require: 'u-case/with_validation'
+gem 'u-case', '~> 2.3', require: 'u-case/with_validation'
 gem 'type_validator', '~> 1.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'

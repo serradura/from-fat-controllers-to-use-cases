@@ -1,7 +1,6 @@
 class Todo::List::UpdateItem < Micro::Case
   flow Todo::List::FindItem,
-       self.call!,
-       Todo::Serialize::AsJson
+       self.call!
 
   attributes :todo, :params
 

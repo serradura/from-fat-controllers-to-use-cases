@@ -1,6 +1,5 @@
 class Todo::List::AddItem < Micro::Case
-  flow self.call!,
-       Todo::Serialize::AsJson
+  flow self.call!
 
   attributes :user, :params
 
