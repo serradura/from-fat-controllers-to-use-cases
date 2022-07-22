@@ -202,7 +202,7 @@ GEM
     tty-which (0.4.1)
     type_validator (1.0.0)
       activemodel (>= 3.2)
-    tzinfo (1.2.5)
+    tzinfo (1.2.10)
       thread_safe (~> 0.1)
     u-attributes (1.2.0)
     u-case (2.3.0)
